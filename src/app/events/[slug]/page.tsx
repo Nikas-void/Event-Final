@@ -33,38 +33,82 @@ const EventDetails = ({ params }: EventDetailsProps) => {
   const [relatedEvents, setRelatedEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // useEffect(() => {
+  //   const fetchEventData = async () => {
+  //     setLoading(true);
+
+  //     // 1. Fetch Main Event
+  //     const { data: eventData, error } = await supabase
+  //       .from("events" as any)
+  //       .select("*")
+  //       .eq("slug", slug)
+  //       .single();
+
+  //     if (error || !eventData) {
+  //       console.error("Error fetching event:", error);
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //     setEvent(eventData);
+
+  //     // 2. Fetch Related Events (same category, different ID)
+  //     const { data: relatedData } = await supabase
+  //       .from("events" as any)
+  //       .select("*")
+  //       .eq("category", (eventData as any).category)
+  //       .neq("id", (eventData as any).id)
+  //       .limit(2);
+
+  //     if (relatedData) setRelatedEvents(relatedData);
+  //     setLoading(false);
+  //   };
+
+  //   if (slug) fetchEventData();
+  // }, [slug]);
   useEffect(() => {
+    let isMounted = true; // Prevents setting state on unmounted component
+
     const fetchEventData = async () => {
+      if (!slug) return;
       setLoading(true);
 
-      // 1. Fetch Main Event
-      const { data: eventData, error } = await supabase
-        .from("events" as any)
-        .select("*")
-        .eq("slug", slug)
-        .single();
+      try {
+        const { data: eventData, error } = await supabase
+          .from("events")
+          .select("*")
+          .eq("slug", slug)
+          .maybeSingle(); // Use maybeSingle to avoid errors if 0 results
 
-      if (error || !eventData) {
-        console.error("Error fetching event:", error);
-        setLoading(false);
-        return;
+        if (isMounted) {
+          if (error || !eventData) {
+            console.error("Error:", error);
+            setEvent(null);
+          } else {
+            setEvent(eventData);
+
+            // Fetch related
+            const { data: relatedData } = await supabase
+              .from("events")
+              .select("*")
+              .eq("category", eventData.category)
+              .neq("id", eventData.id)
+              .limit(2);
+
+            setRelatedEvents(relatedData || []);
+          }
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+      } finally {
+        if (isMounted) setLoading(false);
       }
-
-      setEvent(eventData);
-
-      // 2. Fetch Related Events (same category, different ID)
-      const { data: relatedData } = await supabase
-        .from("events" as any)
-        .select("*")
-        .eq("category", (eventData as any).category)
-        .neq("id", (eventData as any).id)
-        .limit(2);
-
-      if (relatedData) setRelatedEvents(relatedData);
-      setLoading(false);
     };
 
-    if (slug) fetchEventData();
+    fetchEventData();
+    return () => {
+      isMounted = false;
+    }; // Cleanup
   }, [slug]);
 
   const handleBuyTicket = () => {
