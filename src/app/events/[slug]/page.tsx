@@ -89,10 +89,10 @@ const EventDetails = ({ params }: EventDetailsProps) => {
 
             // Fetch related
             const { data: relatedData } = await supabase
-              .from("events")
+              .from("events" as any)
               .select("*")
-              .eq("category", eventData.category)
-              .neq("id", eventData.id)
+              .eq("category", (eventData as any).category)
+              .neq("id", (eventData as any).id)
               .limit(2);
 
             setRelatedEvents(relatedData || []);

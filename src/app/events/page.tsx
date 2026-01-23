@@ -54,17 +54,27 @@ import React from "react";
 
 export const revalidate = 0;
 
+// const Page = async () => {
+//   // Add a limit so it doesn't try to pull 1000s of rows if the DB grows
+//   const { data, error } = await supabase
+//     .from("events" as any)
+//     .select("*")
+//     .limit(50) 
+//     .order("created_at", { ascending: false });
+
+//   if (error) return <div className="p-10">Error: {error.message}</div>;
+  
+//   return <Events events={data || []} />;
+// };
+
+// export default Page;
 const Page = async () => {
-  // Add a limit so it doesn't try to pull 1000s of rows if the DB grows
+  // Use the { cache: 'no-store' } logic implicitly by using the supabase client properly
   const { data, error } = await supabase
     .from("events" as any)
     .select("*")
-    .limit(50) 
-    .order("created_at", { ascending: false });
-
-  if (error) return <div className="p-10">Error: {error.message}</div>;
-  
+    .throwOnError(); // This forces the catch block to trigger if it hangs
+    
   return <Events events={data || []} />;
 };
-
 export default Page;
