@@ -19,7 +19,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-export const revalidate = 0;
+// export const revalidate = 0;
 
 interface EventDetailsProps {
   params: Promise<{ slug: string }>;
