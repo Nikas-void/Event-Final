@@ -75,7 +75,7 @@ const EventDetails = ({ params }: EventDetailsProps) => {
 
       try {
         const { data: eventData, error } = await supabase
-          .from("events")
+          .from("events" as any)
           .select("*")
           .eq("slug", slug)
           .maybeSingle(); // Use maybeSingle to avoid errors if 0 results
