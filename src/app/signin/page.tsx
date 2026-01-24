@@ -1,47 +1,4 @@
-// "use client";
-// import { useState } from "react";
-// import { supabase } from "@/integrations/supabase/client";
-// import { useRouter } from "next/navigation";
-// import { Button } from "@/components/ui/button";
-// import { Input } from "@/components/ui/input";
-// import { toast } from "@/hooks/use-toast";
 
-// export default function SignIn() {
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-//   const [loading, setLoading] = useState(false);
-//   const router = useRouter();
-
-//   const handleLogin = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     setLoading(true);
-
-//     const { error } = await supabase.auth.signInWithPassword({
-//       email,
-//       password,
-//     });
-
-//     if (error) {
-//       toast({ title: "Error", description: error.message, variant: "destructive" });
-//     } else {
-//       router.push("/dashboard");
-//     }
-//     setLoading(false);
-//   };
-
-//   return (
-//     <div className="flex flex-col items-center justify-center min-h-screen p-4">
-//       <form onSubmit={handleLogin} className="space-y-4 w-full max-w-sm">
-//         <h1 className="text-2xl font-bold">Sign In</h1>
-//         <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-//         <Input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-//         <Button type="submit" className="w-full" disabled={loading}>
-//           {loading ? "Logging in..." : "Login"}
-//         </Button>
-//       </form>
-//     </div>
-//   );
-// }
 
 "use client";
 import { useState } from "react";
@@ -63,7 +20,7 @@ export default function AuthPage() {
     setLoading(true);
 
     if (isSignUp) {
-      // REGISTER NEW CUSTOMER
+      
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -81,7 +38,7 @@ export default function AuthPage() {
         });
       }
     } else {
-      // LOGIN EXISTING USER
+      
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,

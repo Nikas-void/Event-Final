@@ -92,7 +92,7 @@ export const MusicProvider = ({ children }: { children: React.ReactNode }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Use a ref to track if a play request is currently pending
+  
   const playPromiseRef = useRef<Promise<void> | null>(null);
 
   const play = async (track: Track) => {
@@ -100,14 +100,14 @@ export const MusicProvider = ({ children }: { children: React.ReactNode }) => {
       audioRef.current = new Audio();
     }
 
-    // If switching tracks
+    
     if (activeTrack?.id !== track.id) {
       audioRef.current.src = track.audio_url;
       setActiveTrack(track);
     }
 
     try {
-      // Capture the promise and catch potential AbortErrors
+      
       playPromiseRef.current = audioRef.current.play();
       await playPromiseRef.current;
       setIsPlaying(true);
@@ -120,7 +120,7 @@ export const MusicProvider = ({ children }: { children: React.ReactNode }) => {
 
   const pause = () => {
     if (audioRef.current) {
-      // Wait for the play promise to resolve before pausing
+      
       if (playPromiseRef.current !== null) {
         playPromiseRef.current.then(() => {
           audioRef.current?.pause();

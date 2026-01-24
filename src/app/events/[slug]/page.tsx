@@ -33,41 +33,9 @@ const EventDetails = ({ params }: EventDetailsProps) => {
   const [relatedEvents, setRelatedEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // useEffect(() => {
-  //   const fetchEventData = async () => {
-  //     setLoading(true);
-
-  //     // 1. Fetch Main Event
-  //     const { data: eventData, error } = await supabase
-  //       .from("events" as any)
-  //       .select("*")
-  //       .eq("slug", slug)
-  //       .single();
-
-  //     if (error || !eventData) {
-  //       console.error("Error fetching event:", error);
-  //       setLoading(false);
-  //       return;
-  //     }
-
-  //     setEvent(eventData);
-
-  //     // 2. Fetch Related Events (same category, different ID)
-  //     const { data: relatedData } = await supabase
-  //       .from("events" as any)
-  //       .select("*")
-  //       .eq("category", (eventData as any).category)
-  //       .neq("id", (eventData as any).id)
-  //       .limit(2);
-
-  //     if (relatedData) setRelatedEvents(relatedData);
-  //     setLoading(false);
-  //   };
-
-  //   if (slug) fetchEventData();
-  // }, [slug]);
+  
   useEffect(() => {
-    let isMounted = true; // Prevents setting state on unmounted component
+    let isMounted = true; 
 
     const fetchEventData = async () => {
       if (!slug) return;
@@ -78,7 +46,7 @@ const EventDetails = ({ params }: EventDetailsProps) => {
           .from("events" as any)
           .select("*")
           .eq("slug", slug)
-          .maybeSingle(); // Use maybeSingle to avoid errors if 0 results
+          .maybeSingle(); 
 
         if (isMounted) {
           if (error || !eventData) {
@@ -87,7 +55,7 @@ const EventDetails = ({ params }: EventDetailsProps) => {
           } else {
             setEvent(eventData);
 
-            // Fetch related
+            
             const { data: relatedData } = await supabase
               .from("events" as any)
               .select("*")
@@ -108,7 +76,7 @@ const EventDetails = ({ params }: EventDetailsProps) => {
     fetchEventData();
     return () => {
       isMounted = false;
-    }; // Cleanup
+    }; 
   }, [slug]);
 
   const handleBuyTicket = () => {

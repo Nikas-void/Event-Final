@@ -14,7 +14,6 @@ export const Reviews = ({ eventId }: { eventId: string }) => {
   const [rating, setRating] = useState(5);
   const [loading, setLoading] = useState(true);
 
-  // Fetch reviews for this specific event
   const fetchReviews = async () => {
     const { data, error } = await supabase
       .from("reviews" as any)
@@ -115,7 +114,6 @@ export const Reviews = ({ eventId }: { eventId: string }) => {
               </div>
               <p className="text-foreground mt-2">{r.content}</p>
 
-              {/* Show delete button only if it's the User's own review OR if YOU are the Admin */}
               {(user?.id === r.user_id || role === "admin") && (
                 <Button
                   variant="ghost"
