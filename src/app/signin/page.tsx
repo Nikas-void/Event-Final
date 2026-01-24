@@ -1,6 +1,5 @@
-
-
 "use client";
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -15,16 +14,39 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  const handleGoogleAuth = async () => {
+    setLoading(true);
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+
+    if (error) {
+      toast({
+        title: "Google sign-in failed",
+        description: error.message,
+        variant: "destructive",
+      });
+      setLoading(false);
+    }
+  };
+
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     if (isSignUp) {
-      
       const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
       });
+
       if (error) {
         toast({
           title: "Error",
@@ -38,11 +60,11 @@ export default function AuthPage() {
         });
       }
     } else {
-      
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+
       if (error) {
         toast({
           title: "Login Failed",
@@ -53,6 +75,7 @@ export default function AuthPage() {
         router.push("/");
       }
     }
+
     setLoading(false);
   };
 
@@ -70,6 +93,25 @@ export default function AuthPage() {
           </p>
         </div>
 
+        {/* GOOGLE BUTTON */}
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
+          onClick={handleGoogleAuth}
+          disabled={loading}
+        >
+          Continue with Google
+        </Button>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3">
+          <div className="h-px w-full bg-border" />
+          <span className="text-xs text-muted-foreground">OR</span>
+          <div className="h-px w-full bg-border" />
+        </div>
+
+        {/* EMAIL/PASSWORD FORM */}
         <form onSubmit={handleAuth} className="space-y-4">
           <Input
             type="email"
@@ -92,6 +134,7 @@ export default function AuthPage() {
 
         <div className="text-center">
           <button
+            type="button"
             onClick={() => setIsSignUp(!isSignUp)}
             className="text-sm text-primary hover:underline"
           >
