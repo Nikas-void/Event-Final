@@ -18,10 +18,14 @@ export default function Navbar() {
   const { user, role, signOut, loading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const isAdmin = role === "admin" || user?.email === "dumanbek17@gmail.com";
+  const isAdmin =
+    role === "admin" ||
+    user?.email === "dumanbek17@gmail.com" ||
+    role === "authenticated";
   const activeLinkKey =
     navLinks.find((link) => link.path === pathname)?.key ?? "";
 
+  console.log(user, "user");
   return (
     <motion.nav
       initial={{ y: -100 }}

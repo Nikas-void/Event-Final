@@ -14,17 +14,16 @@ type Track = {
 export const revalidate = 60; // ISR: cache for 60 seconds
 
 const Music = async () => {
-
-   const { data, error } = await supabase
-        .from("music_tracks")
-        .select("id,title,artist,cover_image,audio_url")
-        .order("created_at", { ascending: false });
+  const { data, error } = await supabase
+    .from("music_tracks")
+    .select("id,title,artist,cover_image,audio_url")
+    .order("created_at", { ascending: false });
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
-            <TracksSection tracks={data || []} />
+          <TracksSection tracks={data || []} />
         </div>
       </main>
       <Footer />

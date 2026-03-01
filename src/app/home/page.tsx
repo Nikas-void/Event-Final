@@ -148,8 +148,7 @@ const Index = ()=> {
               Featured <span className="text-gradient-primary">Events</span>
             </h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Don't miss out on these incredible experiences handpicked just for
-              you
+              Don't miss out on these incredible experiences handpicked just for you
             </p>
           </motion.div>
 

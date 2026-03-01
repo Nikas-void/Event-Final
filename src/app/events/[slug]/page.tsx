@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { use, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Reviews } from "@/components/reviews";
-
 import Footer from "@/components/footer";
 import EventCard from "@/components/eventcard";
 import {
@@ -14,12 +13,10 @@ import {
   MapPin,
   Ticket,
   ArrowLeft,
-  Users,
-  Star,
   Loader2,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-// export const revalidate = 0;
+import Loading from "@/app/loading";
 
 interface EventDetailsProps {
   params: Promise<{ slug: string }>;
@@ -33,9 +30,8 @@ const EventDetails = ({ params }: EventDetailsProps) => {
   const [relatedEvents, setRelatedEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  
   useEffect(() => {
-    let isMounted = true; 
+    let isMounted = true;
 
     const fetchEventData = async () => {
       if (!slug) return;
@@ -46,7 +42,7 @@ const EventDetails = ({ params }: EventDetailsProps) => {
           .from("events" as any)
           .select("*")
           .eq("slug", slug)
-          .maybeSingle(); 
+          .maybeSingle();
 
         if (isMounted) {
           if (error || !eventData) {
@@ -55,7 +51,6 @@ const EventDetails = ({ params }: EventDetailsProps) => {
           } else {
             setEvent(eventData);
 
-            
             const { data: relatedData } = await supabase
               .from("events" as any)
               .select("*")
@@ -76,7 +71,7 @@ const EventDetails = ({ params }: EventDetailsProps) => {
     fetchEventData();
     return () => {
       isMounted = false;
-    }; 
+    };
   }, [slug]);
 
   const handleBuyTicket = () => {
@@ -89,7 +84,7 @@ const EventDetails = ({ params }: EventDetailsProps) => {
   if (loading) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        <Loading />
       </div>
     );
   }

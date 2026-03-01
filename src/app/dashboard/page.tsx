@@ -1,5 +1,3 @@
-
-
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -16,11 +14,11 @@ import {
   Trash2,
   Plus,
   LogOut,
-  Loader2,
   X,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import Loading from "../loading";
 
 const Admin = () => {
   const { user, role, signOut, loading: authLoading } = useAuth();
@@ -35,13 +33,18 @@ const Admin = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: "",
+    slug: "",
     date: "",
     price: "",
     venue: "",
     image: "",
+    time: "",
+    location: "",
+    featured: false,
     category: "",
-    shortDescription: "",
-    fullDescription: "",
+    short_description: "",
+    full_description: "",
+    created_at: new Date().toISOString(),
   });
 
   // 1. ROUTE PROTECTION
@@ -74,11 +77,11 @@ const Admin = () => {
 
   // 3. ADD / EDIT LOGIC (The "Upsert" logic)
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log("editing")
+    console.log("editing");
     e.preventDefault();
     const slug = formData.title.toLowerCase().replace(/ /g, "-");
     const payload = { ...formData, slug, price: Number(formData.price) };
-
+    console.log("payload", payload, editingId);
     if (editingId) {
       // UPDATE existing
       const { error } = await supabase
@@ -86,17 +89,20 @@ const Admin = () => {
         .update(payload)
         .eq("id", editingId);
 
-      if (error)
+      if (error) {
         toast({
           title: "Error",
           description: error.message,
           variant: "destructive",
         });
-      else toast({ title: "Success", description: "Event updated!" });
+      } else toast({ title: "Success", description: "Event updated!" });
     } else {
       // INSERT new
-      const { error } = await supabase.from("events" as any).insert([payload]);
-
+      console.log("inserting");
+      const { error, data } = await supabase
+        .from("events" as any)
+        .insert([payload]);
+      console.log("insert result", { data, error });
       if (error)
         toast({
           title: "Error",
@@ -128,13 +134,18 @@ const Admin = () => {
     setEditingId(event.id);
     setFormData({
       title: event.title || "",
+      slug: event.slug || "",
       date: event.date || "",
       price: event.price || "",
       venue: event.venue || "",
       image: event.image || "",
       category: event.category || "",
-      shortDescription: event.shortDescription || "",
-      fullDescription: event.fullDescription || "",
+      short_description: event.short_description || "",
+      full_description: event.full_description || "",
+      time: event.time || "",
+      location: event.location || "",
+      featured: event.featured || false,
+      created_at: event.created_at || new Date().toISOString(),
     });
     setIsModalOpen(true);
   };
@@ -148,16 +159,23 @@ const Admin = () => {
       venue: "",
       image: "",
       category: "",
-      shortDescription: "",
-      fullDescription: "",
+      short_description: "",
+      full_description: "",
+      slug: "",
+      time: "",
+      location: "",
+      featured: false,
+      created_at: new Date().toISOString(),
     });
     setIsModalOpen(true);
   };
 
+  console.log({ authLoading, fetchingData, dbEvents });
+
   if (authLoading || (fetchingData && dbEvents.length === 0)) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-background">
-        <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        <Loading />
       </div>
     );
   }
@@ -244,6 +262,33 @@ const Admin = () => {
                     }
                   />
                 </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold uppercase">
+                    Featured
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full p-3 rounded-xl border bg-muted/50 focus:ring-2 ring-primary outline-none"
+                    checked={formData.featured}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        featured: e.target.textContent === "true",
+                      })
+                    }
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold uppercase">Time</label>
+                  <input
+                    type="text"
+                    className="w-full p-3 rounded-xl border bg-muted/50 focus:ring-2 ring-primary outline-none"
+                    value={formData.time}
+                    onChange={(e) =>
+                      setFormData({ ...formData, time: e.target.value })
+                    }
+                  />
+                </div>
                 <div className="md:col-span-2 space-y-1">
                   <label className="text-xs font-bold uppercase">
                     Image URL
@@ -268,6 +313,61 @@ const Admin = () => {
                     }
                   />
                 </div>
+                <div className="md:col-span-2 space-y-1">
+                  <label className="text-xs font-bold uppercase">
+                    Short Description
+                  </label>
+                  <input
+                    className="w-full p-3 rounded-xl border bg-muted/50 focus:ring-2 ring-primary outline-none"
+                    value={formData.short_description}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        short_description: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="md:col-span-2 space-y-1">
+                  <label className="text-xs font-bold uppercase">
+                    Full Description
+                  </label>
+                  <input
+                    className="w-full p-3 rounded-xl border bg-muted/50 focus:ring-2 ring-primary outline-none"
+                    value={formData.full_description}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        full_description: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                <div className="md:col-span-2 space-y-1">
+                  <label className="text-xs font-bold uppercase">
+                    Location
+                  </label>
+                  <input
+                    className="w-full p-3 rounded-xl border bg-muted/50 focus:ring-2 ring-primary outline-none"
+                    value={formData.location}
+                    onChange={(e) =>
+                      setFormData({ ...formData, location: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="md:col-span-2 space-y-1">
+                  <label className="text-xs font-bold uppercase">
+                    Created At
+                  </label>
+                  <input
+                    className="w-full p-3 rounded-xl border bg-muted/50 focus:ring-2 ring-primary outline-none"
+                    value={formData.created_at}
+                    onChange={(e) =>
+                      setFormData({ ...formData, created_at: e.target.value })
+                    }
+                  />
+                </div>
+
                 <div className="md:col-span-2 pt-4 flex gap-3">
                   <Button
                     type="button"

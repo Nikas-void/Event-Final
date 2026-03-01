@@ -1,19 +1,14 @@
-
-
 import { Events } from "@/components/EventsPage";
-import { supabase } from "@/integrations/supabase/client"; 
-import React from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const revalidate = 0;
 
-
 const Page = async () => {
- 
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("events" as any)
     .select("*")
-    .throwOnError(); 
-    
+    .throwOnError();
+
   return <Events events={data || []} />;
 };
 export default Page;
