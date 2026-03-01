@@ -64,31 +64,38 @@ export default function Navbar() {
           {/* Auth Section & Mobile Toggle */}
           <div className="flex items-center gap-4">
             <div className="hidden md:flex items-center gap-4">
-              {!loading && user ? (
+              {user ? (
                 <>
                   {isAdmin && (
-                    <Link href="/dashboard">
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
                       <Button
                         variant="ghost"
-                        size="sm"
-                        className="text-primary border border-primary/20"
+                        className="w-full justify-start text-primary p-0"
                       >
                         <LayoutDashboard className="w-4 h-4 mr-2" />
                         Dashboard
                       </Button>
                     </Link>
                   )}
-                  <Button variant="outline" size="sm" onClick={() => signOut()}>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start"
+                    onClick={() => {
+                      signOut();
+                      setMobileMenuOpen(false);
+                    }}
+                  >
                     <LogOut className="w-4 h-4 mr-2" />
                     Logout
                   </Button>
                 </>
               ) : (
-                !loading && (
-                  <Link href="/signin">
-                    <Button size="sm">Sign In</Button>
-                  </Link>
-                )
+                <Link href="/signin" onClick={() => setMobileMenuOpen(false)}>
+                  <Button className="w-full">Sign In</Button>
+                </Link>
               )}
             </div>
 
